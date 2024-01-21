@@ -1,13 +1,16 @@
 <script setup>
 
+
 </script>
 
 <template>
-  <div>
+  <div class="app">
     <router-view/>
   </div>
 </template>
 
-<style scoped>
-
+<style scoped lang='scss'>
+.app{
+  height: 100%;
+}
 </style>

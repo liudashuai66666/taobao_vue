@@ -5,10 +5,9 @@
         <h1 class="logo">
           <RouterLink to="/">品味宝库</RouterLink>
         </h1>
-        <RouterLink class="entry" to="/">
+        <RouterLink class="entry" to="/home">
           进入网站首页
-          <i class="iconfont icon-angle-right"></i>
-          <i class="iconfont icon-angle-right"></i>
+          <i class="fa fa-angle-right" />
         </RouterLink>
       </div>
     </header>
@@ -60,9 +59,12 @@
 
 <script setup>
 import { ref, reactive } from "vue"
-import { useRouter } from "vue-router"
 import { ElMessage } from 'element-plus'
 import {getUser} from "@/api/user"
+import { useStore } from "@/stores/user"
+import { cartStore } from "@/stores/Cart"
+import { useRouter } from "vue-router"
+
 
 
 
@@ -113,14 +115,25 @@ const submitForm = () => {
     if (valid) {
       getUser({mailbox, password}).then(res => {
         if (res.data.flag){
-          console.log(res.data)
+
           ElMessage({ type: "success", message: "登录成功"})
+
           localStorage.setItem("token",res.data.data.token)
           localStorage.setItem("long_token",res.data.data.long_token)
-          router.replace({ path: '/' })
+
+          useStore().login(res.data.data.user);
+          useStore().shop = res.data.data.shop;
+          useStore().shopGoods = res.data.data.shopGoods;
+          console.log(useStore().user)
+          cartStore().setCart(useStore().user.id)
+          if(useStore().user.userType==='MANAGE'){
+            router.replace({ path: '/manage/shop' })
+          }else{
+            router.replace({ path: '/home' })
+          }
         }else{
           ElMessage({ type: "error", message: res.data.data})
-          router.replace({ path: '/' })
+          router.replace({ path: '/login' })
         }
       })
     } else {
